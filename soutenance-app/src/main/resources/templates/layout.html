@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="html(content)" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${pageTitle} ?: 'ENSAH - Gestion Soutenances'">ENSAH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+
+<body>
+
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">ENSAH</div>
+        <div class="brand-sub">Gestion Soutenances</div>
+    </div>
+    <ul class="nav-links">
+        <li><a th:href="@{/}" th:classappend="${#httpServletRequest.requestURI == '/'} ? 'active'">
+            <span class="nav-icon">◈</span> Tableau de bord
+        </a></li>
+        <li><a th:href="@{/import}" th:classappend="${#httpServletRequest.requestURI.startsWith('/import')} ? 'active'">
+            <span class="nav-icon">⬆</span> Import Excel
+        </a></li>
+        <li><a th:href="@{/matching}" th:classappend="${#httpServletRequest.requestURI.startsWith('/matching')} ? 'active'">
+            <span class="nav-icon">⇌</span> Matching
+        </a></li>
+        <li><a th:href="@{/planning}" th:classappend="${#httpServletRequest.requestURI.startsWith('/planning')} ? 'active'">
+            <span class="nav-icon">▦</span> Planning
+        </a></li>
+        <li class="nav-separator"></li>
+        <li><a th:href="@{/etudiants}" th:classappend="${#httpServletRequest.requestURI.startsWith('/etudiants')} ? 'active'">
+            <span class="nav-icon">◉</span> Étudiants
+        </a></li>
+        <li><a th:href="@{/professeurs}" th:classappend="${#httpServletRequest.requestURI.startsWith('/professeurs')} ? 'active'">
+            <span class="nav-icon">◎</span> Professeurs
+        </a></li>
+        <li><a th:href="@{/salles}" th:classappend="${#httpServletRequest.requestURI.startsWith('/salles')} ? 'active'">
+            <span class="nav-icon">▣</span> Salles
+        </a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="/h2-console" target="_blank" class="db-link">Base de données ↗</a>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <main th:replace="${content}"></main>
+</main>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

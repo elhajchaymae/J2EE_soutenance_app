@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head th:fragment="head">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ENSAH - Gestion Soutenances</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/main.css"/>
+</head>
+
+<body th:fragment="html(content)">
+    <nav th:replace="~{layout :: sidebar}"></nav>
+
+    <main class="main-content">
+        <div th:replace="${content}"></div>
+    </main>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+<nav th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">ENSAH</div>
+        <div class="brand-sub">Gestion Soutenances</div>
+    </div>
+    <ul class="nav-links">
+        <li><a th:href="@{/}"><span class="nav-icon">◈</span> Tableau de bord</a></li>
+        <li><a th:href="@{/import}"><span class="nav-icon">⬆</span> Import Excel</a></li>
+        <li><a th:href="@{/matching}"><span class="nav-icon">⇌</span> Matching</a></li>
+        <li><a th:href="@{/planning}"><span class="nav-icon">▦</span> Planning</a></li>
+        <li class="nav-separator"></li>
+        <li><a th:href="@{/etudiants}"><span class="nav-icon">◉</span> Étudiants</a></li>
+        <li><a th:href="@{/professeurs}"><span class="nav-icon">◎</span> Professeurs</a></li>
+        <li><a th:href="@{/salles}"><span class="nav-icon">▣</span> Salles</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="/h2-console" target="_blank" class="db-link">Base de données ↗</a>
+    </div>
+</nav>
+
+
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main})}"
+      lang="fr">
+<head><title>Tableau de bord</title></head>
+<body>
+
+<main th:fragment="main-fragment">
+
+    <div class="page-header">
+        <h1 class="page-title">Tableau de bord</h1>
+        <p class="page-subtitle">Vue d'ensemble du système de gestion des soutenances</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">◉</div>
+            <div class="stat-value" th:text="${nbEtudiants}">0</div>
+            <div class="stat-label">Étudiants</div>
+            <div class="stat-sub" th:text="${nbSansEncadrant} + ' sans encadrant'" th:classappend="${nbSansEncadrant > 0} ? 'warn'"></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">◎</div>
+            <div class="stat-value" th:text="${nbProfs}">0</div>
+            <div class="stat-label">Professeurs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">▦</div>
+            <div class="stat-value" th:text="${nbSoutenances}">0</div>
+            <div class="stat-label">Soutenances planifiées</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">▣</div>
+            <div class="stat-value" th:text="${nbSalles}">0</div>
+            <div class="stat-label">Salles</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">◈</div>
+            <div class="stat-value" th:text="${nbFilieres}">0</div>
+            <div class="stat-label">Filières</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">▷</div>
+            <div class="stat-value" th:text="${nbJours}">0</div>
+            <div class="stat-label">Jours de soutenance</div>
+        </div>
+    </div>
+
+    <div class="workflow-section">
+        <h2 class="section-title">Workflow de génération</h2>
+        <div class="workflow-steps">
+            <div class="workflow-step" th:classappend="${nbEtudiants > 0 and nbProfs > 0} ? 'done'">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Import Excel</div>
+                    <div class="step-desc">Charger filières, profs, salles, étudiants, jours</div>
+                    <a th:href="@{/import}" class="step-btn">Importer →</a>
+                </div>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step" th:classappend="${nbSansEncadrant == 0 and nbEtudiants > 0} ? 'done'">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Matching Encadrants</div>
+                    <div class="step-desc">Affecter automatiquement les encadrants par spécialité</div>
+                    <a th:href="@{/matching}" class="step-btn">Matcher →</a>
+                </div>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step" th:classappend="${nbSoutenances > 0} ? 'done'">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Génération Planning</div>
+                    <div class="step-desc">Planifier les soutenances et constituer les jurys</div>
+                    <a th:href="@{/planning}" class="step-btn">Planifier →</a>
+                </div>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step" th:classappend="${nbSoutenances > 0} ? 'done'">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Export</div>
+                    <div class="step-desc">Télécharger planning et matching en Excel / PDF</div>
+                    <div class="export-btns">
+                        <a th:href="@{/export/planning/excel}" class="step-btn">Planning Excel</a>
+                        <a th:href="@{/export/planning/pdf}" class="step-btn">Planning PDF</a>
+                        <a th:href="@{/export/matching/excel}" class="step-btn">Matching Excel</a>
+                        <a th:href="@{/export/matching/pdf}" class="step-btn">Matching PDF</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

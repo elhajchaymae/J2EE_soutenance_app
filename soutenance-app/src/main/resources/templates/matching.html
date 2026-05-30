@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main-fragment})}" lang="fr">
+<head><title>Matching Encadrants</title></head>
+<body>
+<th:block th:fragment="main-fragment">
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Matching Encadrants</h1>
+        <p class="page-subtitle">Affectation automatique étudiant ↔ encadrant par spécialité</p>
+    </div>
+    <div class="page-actions">
+        <form method="post" action="/matching/reinitialiser" style="display:inline">
+            <button type="submit" class="btn-secondary" onclick="return confirm('Réinitialiser tous les encadrants ?')">Réinitialiser</button>
+        </form>
+        <form method="post" action="/matching/generer" style="display:inline">
+            <button type="submit" class="btn-primary">⇌ Lancer le Matching</button>
+        </form>
+        <a th:href="@{/export/matching/excel}" class="btn-export">Excel ↓</a>
+        <a th:href="@{/export/matching/pdf}" class="btn-export">PDF ↓</a>
+    </div>
+</div>
+
+<div th:if="${matchingResult}" class="result-banner">
+    <strong th:text="${matchingResult.affectations} + ' affectations réussies'"></strong>
+    <span th:if="${matchingResult.echecs > 0}" th:text="' · ' + ${matchingResult.echecs} + ' échecs'" class="warn-text"></span>
+    <details th:if="${not #lists.isEmpty(matchingResult.details)}">
+        <summary>Voir détails</summary>
+        <ul class="details-list">
+            <li th:each="d : ${matchingResult.details}" th:text="${d}"></li>
+        </ul>
+    </details>
+</div>
+
+<div class="two-col">
+    <!-- Statistiques de charge -->
+    <div class="card" th:if="${stats != null}">
+        <h2 class="card-title">Distribution de charge</h2>
+        <div class="equite-badge" th:text="${stats.equite}"></div>
+        <div class="charge-stats">
+            <div class="charge-stat"><span th:text="${stats.moyenne}">0</span><small>Moy. étudiants/prof</small></div>
+            <div class="charge-stat"><span th:text="${stats.max}">0</span><small>Maximum</small></div>
+            <div class="charge-stat"><span th:text="${stats.min}">0</span><small>Minimum</small></div>
+        </div>
+        <div class="charge-bars" th:if="${stats.charges != null}">
+            <div th:each="entry : ${stats.charges}" class="charge-bar-row">
+                <div class="charge-prof-name" th:text="${entry.key}"></div>
+                <div class="charge-bar-wrap">
+                    <div class="charge-bar" th:style="'width:' + (${entry.value} * 20) + 'px; max-width:180px'"></div>
+                    <span th:text="${entry.value}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Algorithme info -->
+    <div class="card">
+        <h2 class="card-title">Algorithme de matching</h2>
+        <div class="algo-desc">
+            <p>Le système utilise un score combiné :</p>
+            <div class="algo-formula">
+                Score = <span class="formula-part">Spécialité × 60%</span> + <span class="formula-part">Équité × 40%</span>
+            </div>
+            <ul class="algo-points">
+                <li>Mots-clés du sujet comparés aux spécialités du prof</li>
+                <li>Distribution équitable de la charge (min/max équilibré)</li>
+                <li>Les étudiants à sujet spécialisé sont traités en priorité</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Table étudiants -->
+<div class="card">
+    <h2 class="card-title">Liste des étudiants et encadrants</h2>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>CNE</th><th>Étudiant</th><th>Filière</th><th>Sujet de Stage</th><th>Encadrant</th><th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="e : ${etudiants}" th:classappend="${e.encadrant == null} ? 'row-warn'">
+                    <td class="mono" th:text="${e.cne}"></td>
+                    <td th:text="${e.nomComplet}"></td>
+                    <td><span class="badge" th:text="${e.filiere?.code ?: '-'}"></span></td>
+                    <td class="sujet-cell" th:text="${e.sujetStage}"></td>
+                    <td th:text="${e.encadrant?.nomComplet ?: '-'}"></td>
+                    <td>
+                        <span th:if="${e.encadrant != null}" class="status-ok">✓ Affecté</span>
+                        <span th:if="${e.encadrant == null}" class="status-ko">⚠ En attente</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(etudiants)}">
+                    <td colspan="6" class="empty-row">Aucun étudiant importé</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</th:block>
+</body>
+</html>

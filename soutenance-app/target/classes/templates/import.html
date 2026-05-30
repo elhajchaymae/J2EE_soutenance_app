@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main-fragment})}" lang="fr">
+<head><title>Import Excel</title></head>
+<body>
+<th:block th:fragment="main-fragment">
+
+<div class="page-header">
+    <h1 class="page-title">Import Excel</h1>
+    <p class="page-subtitle">Charger les données depuis un fichier Excel multi-feuilles</p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Téléverser votre fichier</h2>
+    <form method="post" action="/import" enctype="multipart/form-data" class="upload-form">
+        <div class="upload-zone" id="dropZone">
+            <div class="upload-icon">⬆</div>
+            <div class="upload-text">Glissez votre fichier Excel ici ou</div>
+            <label class="upload-btn">
+                Choisir un fichier
+                <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" required hidden/>
+            </label>
+            <div class="upload-hint" id="fileName">Formats acceptés : .xlsx, .xls (max 20 Mo)</div>
+        </div>
+        <button type="submit" class="btn-primary">Importer le fichier</button>
+    </form>
+</div>
+
+<div class="card" th:if="${importResult}">
+    <h2 class="card-title">Résultat de l'import</h2>
+    <div class="import-stats">
+        <div class="import-stat"><span th:text="${importResult.filieres}">0</span><small>Filières</small></div>
+        <div class="import-stat"><span th:text="${importResult.professeurs}">0</span><small>Professeurs</small></div>
+        <div class="import-stat"><span th:text="${importResult.salles}">0</span><small>Salles</small></div>
+        <div class="import-stat"><span th:text="${importResult.etudiants}">0</span><small>Étudiants</small></div>
+        <div class="import-stat"><span th:text="${importResult.jours}">0</span><small>Jours</small></div>
+    </div>
+    <div th:if="${not #lists.isEmpty(importResult.erreurs)}" class="log-section error-log">
+        <strong>Erreurs :</strong>
+        <ul><li th:each="e : ${importResult.erreurs}" th:text="${e}"></li></ul>
+    </div>
+    <div th:if="${not #lists.isEmpty(importResult.avertissements)}" class="log-section warn-log">
+        <strong>Avertissements :</strong>
+        <ul><li th:each="w : ${importResult.avertissements}" th:text="${w}"></li></ul>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Structure attendue du fichier Excel</h2>
+    <p class="card-hint">Le système détecte automatiquement les feuilles par mots-clés dans leur nom.</p>
+    <div class="schema-grid">
+        <div class="schema-sheet">
+            <div class="sheet-tab filiere-tab">Feuille : filiere / formation</div>
+            <table class="schema-table">
+                <tr><th>code</th><th>nom</th><th>description</th></tr>
+                <tr><td>GI</td><td>Génie Informatique</td><td>...</td></tr>
+            </table>
+        </div>
+        <div class="schema-sheet">
+            <div class="sheet-tab prof-tab">Feuille : prof / enseignant</div>
+            <table class="schema-table">
+                <tr><th>nom</th><th>prenom</th><th>email</th><th>grade</th><th>specialite</th></tr>
+                <tr><td>Alami</td><td>Ahmed</td><td>...</td><td>PH</td><td>IA,NLP</td></tr>
+            </table>
+        </div>
+        <div class="schema-sheet">
+            <div class="sheet-tab salle-tab">Feuille : salle / local</div>
+            <table class="schema-table">
+                <tr><th>nom</th><th>batiment</th><th>capacite</th><th>type</th></tr>
+                <tr><td>S1</td><td>Bloc A</td><td>30</td><td>SALLE</td></tr>
+            </table>
+        </div>
+        <div class="schema-sheet">
+            <div class="sheet-tab etudiant-tab">Feuille : etudiant / stagiaire</div>
+            <table class="schema-table">
+                <tr><th>cne</th><th>nom</th><th>prenom</th><th>sujet</th><th>mots_cles</th><th>filiere</th></tr>
+                <tr><td>P123</td><td>Benali</td><td>Sara</td><td>Système IA...</td><td>IA,ML</td><td>GI</td></tr>
+            </table>
+        </div>
+        <div class="schema-sheet">
+            <div class="sheet-tab jour-tab">Feuille : jour / date / calendrier</div>
+            <table class="schema-table">
+                <tr><th>date</th><th>description</th></tr>
+                <tr><td>2025-06-10</td><td>Jour 1</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+const input = document.getElementById('fileInput');
+const label = document.getElementById('fileName');
+input.addEventListener('change', () => {
+    if (input.files[0]) label.textContent = '📄 ' + input.files[0].name;
+});
+</script>
+
+</th:block>
+</body>
+</html>

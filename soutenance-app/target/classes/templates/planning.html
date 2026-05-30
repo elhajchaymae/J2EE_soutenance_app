@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main})}" lang="fr">
+<head><title>Planning Soutenances</title></head>
+<body>
+<main>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Planning des Soutenances</h1>
+            <p class="page-subtitle">Vue et génération du calendrier de soutenances</p>
+        </div>
+        <div class="page-actions">
+            <form method="post" action="/planning/supprimer" style="display:inline">
+                <button type="submit" class="btn-secondary" onclick="return confirm('Supprimer tout le planning ?')">Supprimer</button>
+            </form>
+            <form method="post" action="/planning/generer" style="display:inline">
+                <button type="submit" class="btn-primary">▦ Générer le Planning</button>
+            </form>
+            <a th:href="@{/export/planning/excel}" class="btn-export">Excel ↓</a>
+            <a th:href="@{/export/planning/pdf}" class="btn-export">PDF ↓</a>
+        </div>
+    </div>
+
+    <div th:if="${planningResult}" class="result-banner">
+        <strong th:text="${planningResult.planifiees} + ' soutenances planifiées'"></strong>
+        <span th:if="${planningResult.echecs > 0}" th:text="' · ' + ${planningResult.echecs} + ' non planifiées'" class="warn-text"></span>
+        <details th:if="${not #lists.isEmpty(planningResult.avertissements)}">
+            <summary>Voir avertissements</summary>
+            <ul class="details-list">
+                <li th:each="a : ${planningResult.avertissements}" th:text="${a}"></li>
+            </ul>
+        </details>
+    </div>
+
+    <!-- Stats rapides -->
+    <div th:if="${stats != null}" class="stats-mini">
+        <div class="mini-stat"><span th:text="${stats.total}">0</span><small>Total</small></div>
+        <div class="mini-stat" th:each="entry : ${stats.parJour}">
+            <span th:text="${entry.value}">0</span>
+            <small th:text="${#temporals.format(entry.key, 'dd/MM')}"></small>
+        </div>
+    </div>
+
+    <!-- Vue planning par jour -->
+    <div th:each="jour : ${jours}" class="planning-day-block">
+        <div class="day-header" th:text="'Soutenances du ' + ${#temporals.format(jour.date, 'EEEE dd MMMM yyyy')}"></div>
+
+        <div class="planning-grid">
+            <div th:each="s : ${soutenances}" th:if="${s.date == jour.date}" class="planning-card">
+                <div class="planning-time">
+                    <span th:text="${#temporals.format(s.heureDebut, 'HH:mm')}"></span>
+                    <span class="time-sep">→</span>
+                    <span th:text="${#temporals.format(s.heureFin, 'HH:mm')}"></span>
+                </div>
+                <div class="planning-student" th:text="${s.etudiant.nomComplet}"></div>
+                <div class="planning-sujet" th:text="${s.etudiant.sujetStage}"></div>
+                <div class="planning-meta">
+                    <span class="planning-salle" th:text="${s.salle?.nom ?: '?'}"></span>
+                    <span class="planning-filiere" th:text="${s.etudiant.filiere?.code ?: '-'}"></span>
+                </div>
+                <div class="jury-info">
+                    <div class="jury-member encadrant">
+                        <span class="jury-role">Enc.</span>
+                        <span th:text="${s.encadrant?.nomComplet ?: '-'}"></span>
+                    </div>
+                    <div class="jury-member president">
+                        <span class="jury-role">Prés.</span>
+                        <span th:text="${s.president?.nomComplet ?: '-'}"></span>
+                    </div>
+                    <div class="jury-member examinateur">
+                        <span class="jury-role">Exam.</span>
+                        <span th:text="${s.examinateur?.nomComplet ?: '-'}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(soutenances)}" class="empty-day">Aucune soutenance planifiée pour ce jour</div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(jours)}" class="card empty-state">
+        <p>Aucun jour de soutenance défini. Importez d'abord votre fichier Excel.</p>
+        <a th:href="@{/import}" class="btn-primary">Aller à l'import →</a>
+    </div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main-fragment})}" lang="fr">
+<head><title>Étudiants</title></head>
+<body>
+<th:block th:fragment="main-fragment">
+<div class="page-header">
+    <h1 class="page-title">Étudiants <span class="count-badge" th:text="${#lists.size(etudiants)}"></span></h1>
+</div>
+<div class="card">
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>CNE</th><th>Nom</th><th>Filière</th><th>Sujet</th><th>Encadrant</th><th>Soutenance</th></tr></thead>
+            <tbody>
+                <tr th:each="e : ${etudiants}">
+                    <td class="mono" th:text="${e.cne}"></td>
+                    <td th:text="${e.nomComplet}"></td>
+                    <td><span class="badge" th:text="${e.filiere?.code ?: '-'}"></span></td>
+                    <td class="sujet-cell" th:text="${e.sujetStage}"></td>
+                    <td th:text="${e.encadrant?.nomComplet ?: '-'}"></td>
+                    <td>
+                        <span th:if="${e.soutenance != null}" class="status-ok"
+                              th:text="${#temporals.format(e.soutenance.date,'dd/MM')} + ' ' + ${#temporals.format(e.soutenance.heureDebut,'HH:mm')}"></span>
+                        <span th:if="${e.soutenance == null}" class="status-ko">Non planifié</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(etudiants)}"><td colspan="6" class="empty-row">Aucun étudiant</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</th:block>
+</body>
+</html>

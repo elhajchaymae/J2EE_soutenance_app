@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main-fragment})}" lang="fr">
+<head><title>Salles</title></head>
+<body>
+<th:block th:fragment="main-fragment">
+<div class="page-header">
+    <h1 class="page-title">Salles <span class="count-badge" th:text="${#lists.size(salles)}"></span></h1>
+</div>
+<div class="card">
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>Nom</th><th>Bâtiment</th><th>Type</th><th>Capacité</th><th>Disponible</th></tr></thead>
+            <tbody>
+                <tr th:each="s : ${salles}">
+                    <td th:text="${s.nom}"></td>
+                    <td th:text="${s.batiment ?: '-'}"></td>
+                    <td><span class="badge" th:text="${s.type ?: 'SALLE'}"></span></td>
+                    <td th:text="${s.capacite ?: '-'}"></td>
+                    <td>
+                        <span th:if="${s.disponible}" class="status-ok">✓</span>
+                        <span th:if="${!s.disponible}" class="status-ko">✗</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(salles)}"><td colspan="5" class="empty-row">Aucune salle</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</th:block>
+</body>
+</html>

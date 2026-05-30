@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main-fragment})}" lang="fr">
+<head><title>Professeurs</title></head>
+<body>
+<th:block th:fragment="main-fragment">
+<div class="page-header">
+    <h1 class="page-title">Professeurs <span class="count-badge" th:text="${#lists.size(professeurs)}"></span></h1>
+</div>
+<div class="card">
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>Nom</th><th>Email</th><th>Grade</th><th>Spécialités</th><th>Étudiants encadrés</th></tr></thead>
+            <tbody>
+                <tr th:each="p : ${professeurs}">
+                    <td th:text="${p.nomComplet}"></td>
+                    <td class="mono" th:text="${p.email ?: '-'}"></td>
+                    <td><span class="badge" th:text="${p.grade ?: '-'}"></span></td>
+                    <td>
+                        <span th:each="sp,iter : ${p.listeSpecialites}" class="tag" th:text="${sp}"></span>
+                        <span th:if="${#lists.isEmpty(p.listeSpecialites)}">-</span>
+                    </td>
+                    <td th:text="${#lists.size(p.etudiants)}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(professeurs)}"><td colspan="5" class="empty-row">Aucun professeur</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</th:block>
+</body>
+</html>
